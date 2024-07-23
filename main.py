@@ -2,17 +2,21 @@ from bs4 import BeautifulSoup
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import os
 from pprint import pprint
-
-SPOTIFY_REDIRECT_URI = "http://localhost:9000/callback"
-SPOTIFY_CLIENT_ID = "680bef471e6d4543b4182b79e43db5a3"
-SPOTIFY_CLIENT_SECRET = "c70c2e99c6aa4015ac1ce69ac7dfd925"
-SPOTIFY_PLAYLIST_NAME = "Billboard to Spotify"
-SPOTIFY_USER_ID= "Saumil Upadhyay"
-SPOTIFY_PLAYLIST_DESCRIPTION = "Provides Top 100 Songs from that time."
+from dotenv import load_dotenv
+load_dotenv()
 
 date = input("Which year do you want to travel to? "
              "Type the date in this format YYYY-MM-DD: ")
+year = date.split("-")[0]
+
+SPOTIFY_REDIRECT_URI = os.environ["DB_SPOTIFY_REDIRECT_URI"]
+SPOTIFY_CLIENT_ID = os.environ["DB_SPOTIFY_CLIENT_ID"]
+SPOTIFY_CLIENT_SECRET = os.environ["DB_SPOTIFY_CLIENT_SECRET"]
+SPOTIFY_PLAYLIST_NAME = "Top 100 songs"
+SPOTIFY_USER_ID= "Saumil Upadhyay"
+SPOTIFY_PLAYLIST_DESCRIPTION = f"Provides Top 100 Songs from {year}"
 
 URL = f"https://www.billboard.com/charts/hot-100/{date}/"
 response = requests.get(URL)
@@ -37,7 +41,6 @@ user_id = sp.current_user()["id"]
 print(user_id)
 
 song_uris = []
-year = date.split("-")[0]
 for song in song_names:
     result = sp.search(q=f"track:{song} year:{year}", type="track")
     try:
